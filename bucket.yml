@@ -8,7 +8,7 @@ Resources:
     Properties:
       BucketName: !Sub "${NAME}"
       AccessControl: PublicRead
-      WebsiteConfiguration:
+    WebsiteConfiguration:
       IndexDocument: index.html
       ErrorDocument: 404.html
       
