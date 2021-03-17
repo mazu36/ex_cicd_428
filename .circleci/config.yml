@@ -16,15 +16,31 @@ jobs:
             --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}" \
             --parameter-overrides NAME="prd-${CIRCLE_WORKFLOW_ID:0:7}"
 
+      - run:
+          name: Copy the files into the bucket
+          command: |
+            aws s3 sync . s3://"prd-${CIRCLE_WORKFLOW_ID:0:7}" --delete
 
-
-
-
+  promote_to_production:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Modifying the CloudFront Distro’s Origin Bucket 
+          command: |
+            aws cloudformation deploy \
+            --template-file cloudfront.yml \
+            --stack-name production-distro \
+            --parameter-overrides PipelineID="prd-${CIRCLE_WORKFLOW_ID:0:7}"
 
 
 workflows:
   my_workflow:
     jobs:
       - create_and_deploy_front_end
-
+      - promote_to_production:
+          requires:
+            - create_and_deploy_front_end
+            
 
