@@ -7,7 +7,7 @@ commands:
           name: Destroy environment
           command: |
             aws cloudformation delete-stack \
-            --stack-name "${CIRCLE_WORKFLOW_ID:0:7}"
+            --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
 
 jobs:
@@ -21,13 +21,13 @@ jobs:
           command: |
             aws cloudformation deploy \
             --template-file bucket.yml \
-            --stack-name "${CIRCLE_WORKFLOW_ID:0:7}" \ 
-            --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID:0:7}"
+            --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}" \ 
+            --parameter-overrides PipelineID="prd-${CIRCLE_WORKFLOW_ID:0:7}"
 
       - run:
           name: Copy the files into the bucket
           command: |
-            aws s3 sync . s3://"${CIRCLE_WORKFLOW_ID:0:7}" --delete
+            aws s3 sync . s3://"prd-${CIRCLE_WORKFLOW_ID:0:7}" --delete
       - destroy_environments
 
   promote_to_production:
@@ -41,7 +41,7 @@ jobs:
             aws cloudformation deploy \
             --template-file cloudfront.yml \
             --stack-name production-distro \
-            --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID:0:7}"
+            --parameter-overrides PipelineID="prd-${CIRCLE_WORKFLOW_ID:0:7}"
       - destroy_environments
 
   clean_up_old_front_end:
