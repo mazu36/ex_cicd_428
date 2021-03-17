@@ -21,8 +21,7 @@ jobs:
           command: |
             aws cloudformation deploy \
             --template-file bucket.yml \
-            --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}" \ 
-            --parameter-overrides NAME="prd-${CIRCLE_WORKFLOW_ID:0:7}"
+            --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}" 
 
       - run:
           name: Copy the files into the bucket
