@@ -1,15 +1,17 @@
 Parameters:
-NAME:
-  Type: String
+  NAME:
+    Type: String
+    
 Resources:
-WebsiteBucket:
-  Type: AWS::S3::Bucket
-  Properties:
-    BucketName: !Sub "${NAME}"
-    AccessControl: PublicRead
-    WebsiteConfiguration:
+  WebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${NAME}"
+      AccessControl: PublicRead
+      WebsiteConfiguration:
       IndexDocument: index.html
       ErrorDocument: 404.html
+      
 WebsiteBucketPolicy:
   Type: AWS::S3::BucketPolicy
   Properties:
