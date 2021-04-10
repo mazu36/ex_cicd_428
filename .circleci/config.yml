@@ -34,8 +34,9 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - run:
-        command: |
-          pip3 install awscli --upgrade --user
+          name: install awscli
+          command: |
+            pip3 install awscli --upgrade --user
       - run:
           name: Look for the last PipelineID
           command: |
