@@ -40,13 +40,14 @@ jobs:
       - run:
           name: Look for the last PipelineID
           command: |
+            pwd
             aws cloudformation \
             list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
             --no-paginate --output text > ~/pipeline_id.txt
             cat ~/pipeline_id.txt
             ls -l ~/pipeline_id.txt
       - persist_to_workspace:
-          root: ~/pipeline_id.txt
+          root: ~/
           paths: pipeline_id.txt
 
   promote_to_production:
