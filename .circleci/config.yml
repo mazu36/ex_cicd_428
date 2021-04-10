@@ -80,7 +80,7 @@ jobs:
             cat /tmp_workspace/pipeline_id.txt
             export PreviousPipelineID="$(cat /tmp_workspace/pipeline_id.txt)"
             echo ${PreviousPipelineID}
-            echo "===="
+            echo "==="
             aws s3 rm "s3://${PreviousPipelineID}" --recursive
                   
       - run:
@@ -89,7 +89,7 @@ jobs:
             cat /tmp_workspace/pipeline_id.txt
             export PreviousPipelineID="$(cat /tmp_workspace/pipeline_id.txt)"
             echo ${PreviousPipelineID}
-            echo "===="
+            echo "==="
             aws cloudformation delete-stack \
             --stack-name "${PreviousPipelineID}"
 
