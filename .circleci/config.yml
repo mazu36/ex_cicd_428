@@ -7,7 +7,7 @@ commands:
           name: Destroy environment
           command: |
             aws cloudformation delete-stack \
-            --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}"
+              --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
 
 jobs:
@@ -20,9 +20,9 @@ jobs:
           name: Create a new S3 bucket
           command: |
             aws cloudformation deploy \
-            --template-file bucket.yml \
-            --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}" \ 
-            --parameter-overrides NAME="${CIRCLE_WORKFLOW_ID:0:7}"
+              --template-file bucket.yml \
+              --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}" \ 
+              --parameter-overrides NAME="${CIRCLE_WORKFLOW_ID:0:7}"
 
       - run:
           name: Copy the files into the bucket
@@ -42,8 +42,8 @@ jobs:
           command: |
             pwd
             aws cloudformation \
-            list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
-            --no-paginate --output text > ~/pipeline_id.txt
+              list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
+              --no-paginate --output text > ~/pipeline_id.txt
             cat ~/pipeline_id.txt
             ls -l ~/pipeline_id.txt
       - persist_to_workspace:
@@ -59,9 +59,9 @@ jobs:
           name: Modifying the CloudFront Distro’s Origin Bucket 
           command: |
             aws cloudformation deploy \
-            --template-file cloudfront.yml \
-            --stack-name production-distro \
-            --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID}"
+              --template-file cloudfront.yml \
+              --stack-name production-distro \
+              --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID}"
 
 
   clean_up_old_front_end:
