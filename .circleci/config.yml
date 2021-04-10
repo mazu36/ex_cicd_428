@@ -78,6 +78,9 @@ jobs:
           name: Retrieve previous PipelineId
           command: |
             pwd
+            find /tmp_workspace -print
+            cat /tmp_workspace/pipeline_id.txt
+            ls -l /tmp_workspace/
             PreviousPipelineID=`cat /tmp_workspace/pipeline_id.txt`
             echo ${PreviousPipelineID}
       - run:
