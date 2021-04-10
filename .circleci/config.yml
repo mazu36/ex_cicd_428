@@ -93,22 +93,20 @@ jobs:
       - run:
           name: Remove old bucket
           command: |
+            export PreviousPipelineID="$(cat /tmp_workspace/pipeline_id.txt)"
             echo ${PreviousPipelineID}
             echo "===="
             cat /tmp_workspace/pipeline_id.txt
-            PreviousPipelineID="tttt-iiii"
-            echo ${PreviousPipelineID}
             aws s3 rm "s3://${PreviousPipelineID}" --recursive
-            aws s3 rm "s3://${PreviousPipelineID}" --force
+
             
       - run:
           name: Remove old stack
           command: |
+            export PreviousPipelineID="$(cat /tmp_workspace/pipeline_id.txt)"
             echo ${PreviousPipelineID}
             echo "===="
             cat /tmp_workspace/pipeline_id.txt
-            PreviousPipelineID="tttt-iiii"
-            echo ${PreviousPipelineID}
             aws cloudformation delete-stack \
             --stack-name "${PreviousPipelineID}"
 
