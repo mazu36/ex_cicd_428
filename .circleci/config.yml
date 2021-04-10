@@ -33,7 +33,6 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - run: apt-get install -y tar
       - run:
           name: Look for the last PipelineID
           command: |
@@ -43,7 +42,7 @@ jobs:
             cat ~/pipeline_id.txt
             ls -l ~/pipeline_id.txt
       - persist_to_workspace:
-          root: ~/
+          root: ~/pipeline_id.txt
           paths: pipeline_id.txt
 
   promote_to_production:
