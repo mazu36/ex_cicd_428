@@ -75,12 +75,13 @@ jobs:
           command: |
             yum -y install tar gzip
       - attach_workspace:
-          at: ~/dir_work
+          at: ~/dir_work/
       - run:
           name: Retrieve previous PipelineId
           command: |
-            ls -l
-            find .
+            pwd
+            ls 
+            find / -name "pipeline_id.txt"
             PreviousPipelineID=`cat ~/dir_work/pipeline_id.txt`
       - run:
           name: Remove old bucket
