@@ -43,12 +43,12 @@ jobs:
             pwd
             aws cloudformation \
               list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
-              --no-paginate --output text > ~/pipeline_id.txt
-            cat ~/pipeline_id.txt
-            ls -l ~/pipeline_id.txt
+              --no-paginate --output text > ~/.circleci/pipeline_id.txt
+            cat ~/.circleci/pipeline_id.txt
+            ls -l 
       - persist_to_workspace:
           root: ~/
-          paths: pipeline_id.txt
+          paths: .circleci
 
   promote_to_production:
     docker:
@@ -73,11 +73,12 @@ jobs:
           command: |
             yum -y install tar gzip
       - attach_workspace:
-          at: ~/pipeline_id.txt
+          at: ~/.circleci
       - run:
           name: Retrieve previous PipelineId
           command: |
-            PreviousPipelineID=`cat ~/pipeline_id.txt`
+            ls -l
+            PreviousPipelineID=`cat pipeline_id.txt`
       - run:
           name: Remove old bucket
           command: |
