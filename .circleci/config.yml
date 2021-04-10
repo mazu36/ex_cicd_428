@@ -36,6 +36,7 @@ jobs:
       - run:
           name: install awscli
           command: |
+            sudo apt-get install -y pip3
             pip3 install awscli --upgrade --user
       - run:
           name: Look for the last PipelineID
