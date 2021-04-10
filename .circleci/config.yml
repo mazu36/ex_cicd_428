@@ -80,7 +80,8 @@ jobs:
           name: Retrieve previous PipelineId
           command: |
             ls -l
-            PreviousPipelineID=`cat pipeline_id.txt`
+            find .
+            PreviousPipelineID=`cat ~/dir_work/pipeline_id.txt`
       - run:
           name: Remove old bucket
           command: |
