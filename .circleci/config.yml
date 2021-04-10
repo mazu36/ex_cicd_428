@@ -81,7 +81,7 @@ jobs:
             find /tmp_workspace -print
             cat /tmp_workspace/pipeline_id.txt
             ls -l /tmp_workspace/
-            PreviousPipelineID=`cat /tmp_workspace/pipeline_id.txt`
+            PreviousPipelineID=$(cat /tmp_workspace/pipeline_id.txt)
             echo ${PreviousPipelineID}
       - run:
           name: Remove old bucket
