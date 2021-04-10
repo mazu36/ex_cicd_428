@@ -31,13 +31,12 @@ jobs:
 
   get_last_deployment_id:
     docker:
-      - image: circleci/node:13.8.0
+      - image: amazon/aws-cli
     steps:
       - run:
-          name: install awscli
+          name: install tar
           command: |
-            sudo apt-get install -y pip3
-            pip3 install awscli --upgrade --user
+            yum -y install tar gzip
       - run:
           name: Look for the last PipelineID
           command: |
