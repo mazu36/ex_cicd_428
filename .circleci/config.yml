@@ -63,7 +63,6 @@ jobs:
               --stack-name production-distro \
               --parameter-overrides PipelineID="prd-${CIRCLE_WORKFLOW_ID:0:7}"
 
-#/root/dir_work/dir_work/pipeline_id.txt
   clean_up_old_front_end:
     docker:
       - image: amazon/aws-cli
@@ -74,39 +73,23 @@ jobs:
             yum -y install tar gzip
       - attach_workspace:
           at: /tmp_workspace/
-      - run:
-          name: Retrieve previous PipelineId
-          command: |
-            pwd
-            cat /tmp_workspace/pipeline_id.txt
-            ls -l /tmp_workspace/
-            echo "---"
-            echo "$(cat /tmp_workspace/pipeline_id.txt)"
-            export xx="$(cat /tmp_workspace/pipeline_id.txt)"
-            echo "xx=$xx"
-            echo "---"
-            export PreviousPipelineID=$(cat /tmp_workspace/pipeline_id.txt)
-            echo ${PreviousPipelineID}
-            echo "---"
-            export PreviousPipelineID="$(cat /tmp_workspace/pipeline_id.txt)"
-            echo ${PreviousPipelineID}
+
       - run:
           name: Remove old bucket
           command: |
+            cat /tmp_workspace/pipeline_id.txt
             export PreviousPipelineID="$(cat /tmp_workspace/pipeline_id.txt)"
             echo ${PreviousPipelineID}
             echo "===="
-            cat /tmp_workspace/pipeline_id.txt
             aws s3 rm "s3://${PreviousPipelineID}" --recursive
-
-            
+                  
       - run:
           name: Remove old stack
           command: |
+            cat /tmp_workspace/pipeline_id.txt
             export PreviousPipelineID="$(cat /tmp_workspace/pipeline_id.txt)"
             echo ${PreviousPipelineID}
             echo "===="
-            cat /tmp_workspace/pipeline_id.txt
             aws cloudformation delete-stack \
             --stack-name "${PreviousPipelineID}"
 
@@ -115,6 +98,12 @@ workflows:
   my_workflow:
     jobs:
       - get_last_deployment_id
-      - clean_up_old_front_end:
+      - create_and_deploy_front_end:
           requires:
             - get_last_deployment_id
+      - promote_to_production:
+          requires:
+            - create_and_deploy_front_end
+      - clean_up_old_front_end:
+          requires:
+            - promote_to_production
