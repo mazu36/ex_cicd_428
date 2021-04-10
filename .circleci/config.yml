@@ -78,8 +78,9 @@ jobs:
           name: Retrieve previous PipelineId
           command: |
             pwd
-            ls 
+            find / pipeline_id.txt 2>/null 
             PreviousPipelineID=`cat /tmp_workspace/pipeline_id.txt`
+            echo ${PreviousPipelineID}
       - run:
           name: Remove old bucket
           command: |
