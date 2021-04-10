@@ -41,14 +41,16 @@ jobs:
           name: Look for the last PipelineID
           command: |
             pwd
+            ls -l
+            mkdir ~/dir_work/
             aws cloudformation \
               list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
-              --no-paginate --output text > ~/.circleci/pipeline_id.txt
-            cat ~/.circleci/pipeline_id.txt
+              --no-paginate --output text > ~/dir_work/pipeline_id.txt
+            cat ~/dir_work/pipeline_id.txt
             ls -l 
       - persist_to_workspace:
           root: ~/
-          paths: .circleci
+          paths: dir_work
 
   promote_to_production:
     docker:
@@ -73,7 +75,7 @@ jobs:
           command: |
             yum -y install tar gzip
       - attach_workspace:
-          at: ~/.circleci
+          at: ~/dir_work
       - run:
           name: Retrieve previous PipelineId
           command: |
