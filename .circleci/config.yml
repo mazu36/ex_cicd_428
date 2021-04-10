@@ -41,16 +41,14 @@ jobs:
           name: Look for the last PipelineID
           command: |
             pwd
-            ls -l
-            mkdir ~/dir_work/
             aws cloudformation \
               list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
-              --no-paginate --output text > ~/dir_work/pipeline_id.txt
-            cat ~/dir_work/pipeline_id.txt
-            ls -l 
+              --no-paginate --output text > ~/pipeline_id.txt
+            cat ~/pipeline_id.txt
+            ls 
       - persist_to_workspace:
           root: ~/
-          paths: dir_work
+          paths: pipeline_id.txt
 
   promote_to_production:
     docker:
@@ -65,7 +63,7 @@ jobs:
               --stack-name production-distro \
               --parameter-overrides PipelineID="prd-${CIRCLE_WORKFLOW_ID:0:7}"
 
-
+#/root/dir_work/dir_work/pipeline_id.txt
   clean_up_old_front_end:
     docker:
       - image: amazon/aws-cli
@@ -75,14 +73,13 @@ jobs:
           command: |
             yum -y install tar gzip
       - attach_workspace:
-          at: ~/dir_work/
+          at: /tmp_workspace/
       - run:
           name: Retrieve previous PipelineId
           command: |
             pwd
             ls 
-            find / -name "pipeline_id.txt"
-            PreviousPipelineID=`cat ~/dir_work/pipeline_id.txt`
+            PreviousPipelineID=`cat /tmp_workspace/pipeline_id.txt`
       - run:
           name: Remove old bucket
           command: |
