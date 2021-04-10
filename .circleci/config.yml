@@ -86,7 +86,13 @@ jobs:
       - run:
           name: Remove old bucket
           command: |
+            echo ${PreviousPipelineID}
+            echo "===="
+            cat /tmp_workspace/pipeline_id.txt
+            PreviousPipelineID="tttt-iiii"
+            echo ${PreviousPipelineID}
             aws s3 rm "s3://${PreviousPipelineID}" --recursive
+            
       - run:
           name: Remove old stack
           command: |
