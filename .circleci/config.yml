@@ -10,7 +10,6 @@ commands:
             --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
 
-
 jobs:
   create_and_deploy_front_end:
     docker:
@@ -22,14 +21,29 @@ jobs:
           command: |
             aws cloudformation deploy \
             --template-file bucket.yml \
-            --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --parameter-overrides NAME="prd-${CIRCLE_WORKFLOW_ID:0:7}"
+            --stack-name "prd-${CIRCLE_WORKFLOW_ID:0:7}" \ 
+            --parameter-overrides NAME="${CIRCLE_WORKFLOW_ID:0:7}"
+
       - run:
           name: Copy the files into the bucket
           command: |
             aws s3 sync . s3://"prd-${CIRCLE_WORKFLOW_ID:0:7}" --delete
-            
-      - destroy_environments
+
+  get_last_deployment_id:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - run:
+          name: Look for the last PipelineID
+          command: |
+            aws cloudformation \
+            list-exports --query "Exports[?Name==\`PipelineID\`].Value" \
+            --no-paginate --output text > ~/pipeline_id.txt
+            cat ~/pipeline_id.txt
+            ls -l ~/pipeline_id.txt
+      - persist_to_workspace:
+          root: ~/
+          paths: pipeline_id.txt
 
   promote_to_production:
     docker:
@@ -42,32 +56,37 @@ jobs:
             aws cloudformation deploy \
             --template-file cloudfront.yml \
             --stack-name production-distro \
-            --parameter-overrides PipelineID="prd-${CIRCLE_WORKFLOW_ID:0:7}"
-      - destroy_environments
+            --parameter-overrides PipelineID="${CIRCLE_WORKFLOW_ID}"
 
 
   clean_up_old_front_end:
     docker:
       - image: amazon/aws-cli
     steps:
-      - checkout
+      - attach_workspace:
+          at: ~/pipeline_id.txt
+      - run:
+          name: Retrieve previous PipelineId
+          command: |
+            PreviousPipelineID=`cat ~/pipeline_id.txt`
       - run:
           name: Remove old bucket
           command: |
-            aws s3 rm "s3://${OldPipelineID}" --recursive
+            aws s3 rm "s3://${PreviousPipelineID}" --recursive
       - run:
           name: Remove old stack
           command: |
             aws cloudformation delete-stack \
             --stack-name "${PreviousPipelineID}"
-      - destroy_environments
-      
-      
+
+
 workflows:
   my_workflow:
     jobs:
-      - create_and_deploy_front_end
+      - get_last_deployment_id
+      - create_and_deploy_front_end:
+          requires:
+            - get_last_deployment_id
       - promote_to_production:
           requires:
             - create_and_deploy_front_end
-            
